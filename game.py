@@ -6,18 +6,18 @@ class player:
         self.name = name
         self.strength = strength
         self.health = health
-        self.num = num
+        self.num = num # used for randomizing damage dealt in attacks
         self.money = money
         self.power = power
     def take_damage(self, num, damage, name):
         print(name, "attacked!")
-        if (num == self.num):
+        if (self.num == num):
             self.health -= damage
             print("the attack was very strong!")
-        elif (self.num - num == 1):
+        elif ((self.num - num == 1) or (self.num - num == -1)): # if the numbers are within 1 of eachother, 1/2 damage is dealt
             self.health -= damage / 2
             print("the attack was strong")
-        elif (self.num - num == 2):
+        elif ((self.num - num == 2) or (self.num - num == -2)): # if the numbers are within 2 of eachother, 1/4 damage is dealt
             self.health -= damage / 4
             print("the attack was weak")
         else:
@@ -55,18 +55,17 @@ class enemy:
         self.reward = reward
     def take_damage(self, num, damage, name):
         print(name, "attacked!")
-        if (num == self.num):
+        if (self.num == num):
             self.health -= damage
             print("the attack was very strong!")
-        elif (self.num - num == 1):
+        elif ((self.num - num == 1) or (self.num - num == -1)):
             self.health -= damage / 2
             print("the attack was strong")
-        elif (self.num - num == 2):
+        elif ((self.num - num == 2) or (self.num - num == 2)):
             self.health -= damage / 4
             print("the attack was weak")
         else:
             print("the attack failed!")
-
     def check_health(self):
         if (self.health <= 0):
             print(self.name,"lost!")
@@ -74,6 +73,7 @@ class enemy:
             print(self.name + "'s health is: ", self.health)
     def attack(self):
         return random.randint(1,4)
+
 class item:
     def __init__(self, name, cost, uses, desc):
         self.name = name
@@ -81,6 +81,7 @@ class item:
         self.uses = uses
         self.desc = desc
 
+# sets the player's name
 name = input("what is your name? \n")
 p1 = player(name, 5, 10, random.randint(1,4),0, None)
 e1 = enemy("cave monster", 3, 5, (random.randint(1,4)), 3, 1)
@@ -90,11 +91,13 @@ boss = enemy("big monster", 8, 15, (random.randint(1,4)), 50, 10)
 strength_potion = item("strength potion", 10, 1, "increases strength by 5. Can be used once.")
 health_potion = item("health potion", 8, 3, "increases health by 5. Can be used 3 times.")
 
+# tutorial/rules
 print ("hello,",p1.name)
 print("Type 'attack' to attack. Type 'quit' to quit the game.")
  
 battling = True
 
+# function used for all battles 
 def battle(e, power):
     p1.health = 10
     while (battling == True):
@@ -102,6 +105,7 @@ def battle(e, power):
         p1.take_damage(e1.attack(), e.strength, e.name)
         p1.check_health()
         
+        # player loses
         if ((p1.health <= 0)):
             battling == False
             break
@@ -111,7 +115,6 @@ def battle(e, power):
             p1.use_power(power.uses)
             power.uses -= 1
         elif (ans == "attack"):
-            #attack = input("input a number between 1-5 \n")
             e.take_damage(p1.attack(), (p1.strength), p1.name)
             e.check_health()
         elif (ans == "quit"):
@@ -122,6 +125,7 @@ def battle(e, power):
     
         time.sleep(1.5)
 
+        # player wins
         if ((e.health <= 0)):
             print("Good job!")
             p1.money += e.money
@@ -144,6 +148,7 @@ time.sleep(1.5)
 battle(e3, "")
 print(" ")
 ans = input("do you want to enter the shop? \n")
+# sets up the shop
 shop_items = [strength_potion, health_potion]
 if (ans == "yes"):
     print("you have:", p1.money,"coins")
@@ -158,10 +163,11 @@ if (ans == "yes"):
                 print("type '",p1.power,"' during a battle to use your item.")
             else:
                 print("you do not have enough money!")
-print(p1.name, "exited the shop.")
+    print(p1.name, "exited the shop.")
         
 print(" ")
 print("final battle")
+# the powerup that the player purchanced is used as a parameter in the battle function
 if p1.power == strength_potion.name:
     battle(boss, strength_potion)
 elif p1.power == health_potion.name:
