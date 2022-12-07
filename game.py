@@ -42,6 +42,20 @@ class player:
                 print(self.power +" uses left: ",(uses - 1))
             else:
                 print(self.power + " has been used up")
+        elif (self.power == "cookie"):
+            if uses > 0:
+                self.health += 3
+                print(self.name +"'s health:", self.health)
+                print(self.power +" uses left: ",(uses - 1))
+            else:
+                print(self.power + " has been used up")
+        elif (self.power == "sword"):
+            if uses > 0:
+                self.strength += 5
+                print(self.name +"'s strength:", self.strength)
+                print(self.power +" uses left: ",(uses - 1))
+            else:
+                print(self.power + " has already been equipped")
     def attack(self):
         return random.randint(1,4)
 
@@ -84,16 +98,20 @@ class item:
 # sets the player's name
 name = input("what is your name? \n")
 p1 = player(name, 5, 10, random.randint(1,4),0, None)
-e1 = enemy("cave monster", 3, 5, (random.randint(1,4)), 3, 1)
-e2 = enemy("some guy", 5, 5, (random.randint(1,4)), 9, 3)
-e3 = enemy("monster", 5, 10, (random.randint(1,4)), 15, 5)
-boss = enemy("big monster", 8, 15, (random.randint(1,4)), 50, 10)
-strength_potion = item("strength potion", 10, 1, "increases strength by 5. Can be used once.")
-health_potion = item("health potion", 8, 3, "increases health by 5. Can be used 3 times.")
 
 # tutorial/rules
 print ("hello,",p1.name)
 print("Type 'attack' to attack. Type 'quit' to quit the game.")
+
+enemy_names = ["cave", "forest", "tree", "water", "fire"]
+e1 = enemy("small " + enemy_names[(random.randint(0,4))] + " monster", 3, 5, (random.randint(1,4)), 3, 1)
+e2 = enemy(enemy_names[(random.randint(0,4))] + " monster", 5, 5, (random.randint(1,4)), 9, 3)
+e3 = enemy(enemy_names[(random.randint(0,4))] + " monster", 5, 10, (random.randint(1,4)), 15, 5)
+boss = enemy("big "+ enemy_names[(random.randint(0,4))] + " monster", 8, 15, (random.randint(1,4)), 50, 10) 
+strength_potion = item("strength potion", 15, 3, "increases strength by 5. Can be used 3 times.")
+health_potion = item("health potion", 20, 5, "increases health by 5. Can be used 5 times.")
+cookie = item("cookie", 2, 1, "increases health by 3. Can be used once.")
+sword = item("sword", 8, 1, "increases strength by 5. Can be used once.")
  
 battling = True
 
@@ -149,7 +167,7 @@ battle(e3, "")
 print(" ")
 ans = input("do you want to enter the shop? \n")
 # sets up the shop
-shop_items = [strength_potion, health_potion]
+shop_items = [strength_potion, health_potion, cookie, sword]
 if (ans == "yes"):
     print("you have:", p1.money,"coins")
     for x in shop_items:
@@ -172,5 +190,9 @@ if p1.power == strength_potion.name:
     battle(boss, strength_potion)
 elif p1.power == health_potion.name:
     battle(boss, health_potion)
+elif p1.power == cookie.name:
+    battle(boss, cookie)
+elif p1.power == sword.name:
+    battle(boss, sword)
 else:
     battle(boss, None)
