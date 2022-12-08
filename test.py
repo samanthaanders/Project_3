@@ -56,13 +56,6 @@ class player:
                 print(self.power +" uses left: ",(uses - 1))
             else:
                 print(self.power + " has already been equipped")
-        elif (self.power == "health spell"):
-            if uses > 0:
-                self.health += 7
-                print(self.name +"'s health:", self.health)
-                print(self.power +" uses left: ",(uses - 1))
-            else:
-                print(self.power + " has been used up")
     def attack(self):
         return random.randint(1,4)
 
@@ -105,7 +98,6 @@ class item:
 # sets the player's name
 name = input("what is your name? \n")
 p1 = player(name, 5, 10, random.randint(1,4),0, None)
-p1_power = None
 
 # tutorial/rules
 print ("hello,",p1.name)
@@ -114,103 +106,100 @@ print("Type 'attack' to attack. Type 'quit' to quit the game.")
 # enemy names are randomized from this list 
 enemy_names = ["cave", "forest", "tree", "water", "fire"]
 
-playing = True
+# creates all the objects
+e1 = enemy("small " + enemy_names[(random.randint(0,4))] + " monster", 3, 5, (random.randint(1,4)), 3, 1)
+e2 = enemy(enemy_names[(random.randint(0,4))] + " monster", 5, 5, (random.randint(1,4)), 9, 3)
+e3 = enemy(enemy_names[(random.randint(0,4))] + " monster", 5, 10, (random.randint(1,4)), 15, 5)
+boss = enemy("big "+ enemy_names[(random.randint(0,4))] + " monster", 8, 15, (random.randint(1,4)), 50, 10) 
+strength_potion = item("strength potion", 15, 3, "increases strength by 5. Can be used 3 times.")
+health_potion = item("health potion", 20, 5, "increases health by 5. Can be used 5 times.")
+cookie = item("cookie", 2, 1, "increases health by 3. Can be used once.")
+sword = item("sword", 8, 1, "increases strength by 5. Can be used once.")
+ 
+battling = True
 
-while playing == True:
-    # creates all the objects
-    e1 = enemy("small " + enemy_names[(random.randint(0,4))] + " monster", 3, 5, (random.randint(1,4)), 3, 1)
-    e2 = enemy(enemy_names[(random.randint(0,4))] + " monster", 5, 5, (random.randint(1,4)), 9, 3)
-    e3 = enemy(enemy_names[(random.randint(0,4))] + " monster", 5, 10, (random.randint(1,4)), 15, 5)
-    boss = enemy("big "+ enemy_names[(random.randint(0,4))] + " monster", 8, 15, (random.randint(1,4)), 50, 10) 
-    strength_potion = item("strength potion", 15, 3, "increases strength by 5. Can be used 3 times.")
-    health_potion = item("health potion", 20, 5, "increases health by 5. Can be used 5 times.")
-    cookie = item("cookie", 2, 1, "increases health by 3. Can be used once.")
-    sword = item("sword", 8, 1, "increases strength by 5. Can be used once.")
-    health_spell = item("health spell", 50, 10, "increases health by 7. Can be used 10 times.")
-    
-    battling = True
-
-    # function used for all battles 
-    def battle(e, power):
-        p1.health = 10
-        while (battling == True):
-            print(" ")
-            p1.take_damage(e1.attack(), e.strength, e.name)
-            p1.check_health()
-            
-            # player loses
-            if ((p1.health <= 0)):
-                battling == False
-                break
-
-            ans = input("What do you do? \n")
-            if (ans == p1.power):
-                p1.use_power(power.uses)
-                power.uses -= 1
-            elif (ans == "attack"):
-                e.take_damage(p1.attack(), (p1.strength), p1.name)
-                e.check_health()
-            elif (ans == "quit"):
-                print("thanks for playing!")
-                quit()
-            else:
-                print("invalid response! your turn has been skipped.")
+# function used for all battles 
+def battle(e, power):
+    p1.health = 10
+    while (battling == True):
+        print(" ")
+        p1.take_damage(e1.attack(), e.strength, e.name)
+        p1.check_health()
         
-            time.sleep(1.5)
+        # player loses
+        if ((p1.health <= 0)):
+            battling == False
+            break
 
-            # player wins
-            if ((e.health <= 0)):
-                print("Good job!")
-                p1.money += e.money
-                print("+" , e.money, "coins")
-                print(p1.name,"has", p1.money,"coins")
-                p1.strength += e.reward
-                print("+", e.reward, "strength") 
-                print(p1.name + "'s strength:",p1.strength)
-                battling == False
-                break
-
-    print(" ")
-    print("battle 1")
-    battle(e1, p1_power)
-    print(" ")
-    print("battle 2")
-    time.sleep(1.5)
-    battle(e2, p1_power)
-    print(" ")
-    print("battle 3")
-    time.sleep(1.5)
-    battle(e3, p1_power)
-    print(" ")
-    ans = input("do you want to enter the shop? \n")
-    # sets up the shop
-    shop_items = [strength_potion, health_potion, cookie, sword, health_spell]
-    if (ans == "yes"):
-        print("you have:", p1.money,"coins")
-        for x in shop_items:
-            print(x.name,"costs: ",x.cost, "  Description: ", x.desc)
-        ans = input("which one do you want to buy? You can only own one item at a time. \n")
-        for x in shop_items:
-            if (ans == x.name):
-                if (p1.money >= x.cost):
-                    p1.money -= x.cost
-                    p1.power = x.name
-                    p1_power = x
-                    print("purchaced", x.name)
-                    print("type '",p1.power,"' during a battle to use your item.")
-                else:
-                    print("you do not have enough money!")
-        print(p1.name, "exited the shop.")
-            
-    print(" ")
-    print("final battle")
-    battle(boss, p1_power)
+        ans = input("What do you do? \n")
+        if (ans == p1.power):
+            p1.use_power(power.uses)
+            power.uses -= 1
+        elif (ans == "attack"):
+            e.take_damage(p1.attack(), (p1.strength), p1.name)
+            e.check_health()
+        elif (ans == "quit"):
+            print("thanks for playing!")
+            quit()
+        else:
+            print("invalid response! your turn has been skipped.")
     
-    ans = input("Do you want to play again? You will keep all your progress. \n")
-    if (ans == "yes"):
-        playing = True # continues the while loop
-    else:
-        playing = False
+        time.sleep(1.5)
 
-# exit message
+        # player wins
+        if ((e.health <= 0)):
+            print("Good job!")
+            p1.money += e.money
+            print("+" , e.money, "coins")
+            print(p1.name,"has", p1.money,"coins")
+            p1.strength += e.reward
+            print("+", e.reward, "strength") 
+            print(p1.name + "'s strength:",p1.strength)
+            battling == False
+            break
+
+print(" ")
+print("battle 1")
+battle(e1, "")
+print(" ")
+print("battle 2")
+time.sleep(1.5)
+battle(e2, "")
+print(" ")
+print("battle 3")
+time.sleep(1.5)
+battle(e3, "")
+print(" ")
+ans = input("do you want to enter the shop? \n")
+# sets up the shop
+shop_items = [strength_potion, health_potion, cookie, sword]
+if (ans == "yes"):
+    print("you have:", p1.money,"coins")
+    for x in shop_items:
+        print(x.name,"costs: ",x.cost, "  Description: ", x.desc)
+    ans = input("which one do you want to buy? You can only purchace one.\n")
+    for x in shop_items:
+        if (ans == x.name):
+            if (p1.money >= x.cost):
+                p1.power = x.name
+                print("purchaced", x.name)
+                print("type '",p1.power,"' during a battle to use your item.")
+            else:
+                print("you do not have enough money!")
+    print(p1.name, "exited the shop.")
+        
+print(" ")
+print("final battle")
+# the powerup that the player purchanced is used as a parameter in the battle function
+if p1.power == strength_potion.name:
+    battle(boss, strength_potion)
+elif p1.power == health_potion.name:
+    battle(boss, health_potion)
+elif p1.power == cookie.name:
+    battle(boss, cookie)
+elif p1.power == sword.name:
+    battle(boss, sword)
+else:
+    battle(boss, None)
+
 print("Thank you for playing!")
