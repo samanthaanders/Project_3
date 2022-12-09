@@ -102,7 +102,7 @@ class item:
         self.uses = uses
         self.desc = desc
 
-# sets the player's name
+# sets the player's name and creates the player object
 name = input("what is your name? \n")
 p1 = player(name, 5, 10, random.randint(1,4),0, None)
 p1_power = None
